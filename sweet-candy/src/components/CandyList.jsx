@@ -5,7 +5,7 @@ const CandyList = () => {
 	const [errorMessage, setErrorMessage] = useState("");
 
 	useEffect(() => {
-		fetch(`https://localhost:7095/candies?Name=abc&MinPrice=fabwfawf`)
+		fetch(`https://localhost:7095/candies`)
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.length === 0) {
@@ -26,7 +26,16 @@ const CandyList = () => {
 		<div className="product-list">
 			{candies.length > 0 ? (
 				candies.map((item) => (
-					<div className="product-item" key={item.id}>
+					<div
+						className="product-item"
+						key={item.id}
+						style={{
+							margin: "12px 0",
+							background: "pink",
+							padding: "14px",
+							borderRadius: "5px",
+						}}
+					>
 						<h1>{item.name}</h1>
 						<p>$ {item.price}</p>
 					</div>
