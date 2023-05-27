@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SweetCandy.Core\SweetCandy.Core.csproj" />
+    <ProjectReference Include="..\SweetCandy.Data\SweetCandy.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Media\" />
+    <Folder Include="Queries\" />
+  </ItemGroup>
+
+</Project>
