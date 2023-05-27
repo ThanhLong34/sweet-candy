@@ -33,6 +33,7 @@ namespace SweetCandy.Services.Services
 
             return await queryable.Include(i => i.Candies).Select(i => new Category()
             {
+                Id = i.Id,
                 Name = i.Name,
                 ShowOnMenu = i.ShowOnMenu,
                 Candies = i.Candies,
@@ -76,6 +77,12 @@ namespace SweetCandy.Services.Services
             IQueryable<Category> queryable = _dbContext.Set<Category>();
             bool isSuccess = await queryable.Where(i => i.Id == categoryId).ExecuteDeleteAsync(cancellationToken) > 0;
             return isSuccess;
+        }
+
+        public async Task<Category> FindCategoryByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            IQueryable<Category> queryable = _dbContext.Set<Category>();
+            return await queryable.FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
         }
     }
 }

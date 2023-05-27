@@ -21,5 +21,7 @@ namespace SweetCandy.Services.Services
             int? categoryId = null,
             CancellationToken cancellationToken = default
         );
+
+        public Task<Category> FindCategoryByIdAsync(int id, CancellationToken cancellationToken = default);
     }
 }

@@ -14,14 +14,16 @@ namespace SweetCandy.Services.Services
         );
 
         public Task<Candy> AddOrUpdateCandyAsync(
-            string categoryName,
-            bool showOnMenu = false,
-            int? categoryId = null,
+            string candyName,
+            decimal candyPrice,
+            DateTime candyExpirationDate,
+            int categoryId,
+            int? candyId = null,
             CancellationToken cancellationToken = default
         );
 
         public Task<bool> DeleteCandyAsync(
-            int? categoryId = null,
+            int? candyId = null,
             CancellationToken cancellationToken = default
         );
     }

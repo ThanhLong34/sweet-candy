@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SweetCandy.WebApi.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SweetCandy.WebApi.Validations
 {
@@ -16,7 +17,7 @@ namespace SweetCandy.WebApi.Validations
                 .WithMessage("Giá tiền phải lớn hơn 0");
             
             RuleFor(a => a.ExpirationDate)
-                .GreaterThan(DateTime.MinValue)
+                .Must((date) => !date.Equals(default(DateTime)))
                 .WithMessage("Ngày hết hạn không hợp lệ");
             
             RuleFor(a => a.CategoryId)

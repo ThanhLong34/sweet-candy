@@ -48,7 +48,7 @@ namespace SweetCandy.WebApi
 
                 // AddCategory
                 app.MapPost("/categories", async (
-                    ICategoryService service, 
+                    ICategoryService service,
                     CategoryEditModel model,
                     IValidator<CategoryEditModel> validator
                 ) =>
@@ -71,8 +71,8 @@ namespace SweetCandy.WebApi
 
                 // UpdateCategory
                 app.MapPut("/categories/{id:int}", async (
-                    ICategoryService service, 
-                    CategoryEditModel model, 
+                    ICategoryService service,
+                    CategoryEditModel model,
                     int id,
                     IValidator<CategoryEditModel> validator
                 ) =>
@@ -108,7 +108,7 @@ namespace SweetCandy.WebApi
 
                 //! Candies endpoints
 
-                // 
+                // GetCandies
                 app.MapGet("/candies", async (ICandyService service, [AsParameters] CandyFilterModel model) =>
                 {
                     var candies = await service.GetCandiesAsync(
@@ -119,6 +119,81 @@ namespace SweetCandy.WebApi
                .WithName("GetCandies")
                .Produces<IList<Candy>>()
                .WithOpenApi();
+
+                // AddCandy
+                app.MapPost("/candies", async (
+                    ICategoryService categoryService,
+                    ICandyService service,
+                    CandyEditModel model,
+                    IValidator<CandyEditModel> validator
+                ) =>
+                {
+                    model.Name = model.Name.Trim();
+
+                    var validationResult = await validator.ValidateAsync(model);
+                    if (!validationResult.IsValid)
+                    {
+                        return Results.BadRequest(validationResult.Errors.ToResponse());
+                    }
+
+                    // Kiểm tra danh mục tồn tại
+                    Category categoryFoundById = await categoryService.FindCategoryByIdAsync(model.CategoryId);
+                    if (categoryFoundById != null)
+                    {
+                        Candy candyResult = await service.AddOrUpdateCandyAsync(model.Name, model.Price, model.ExpirationDate, model.CategoryId);
+                        candyResult.Category = null;
+                        return Results.Ok(candyResult);
+                    }
+
+                    return Results.BadRequest("Danh mục không tồn tại");
+                })
+                .WithName("AddCandy")
+                .Accepts<Candy>("application/json")
+                .Produces<Candy>()
+                .WithOpenApi();
+
+                // UpdateCandy
+                app.MapPut("/candies/{id:int}", async (
+                    ICategoryService categoryService,
+                    ICandyService service,
+                    CandyEditModel model,
+                    int id,
+                    IValidator<CandyEditModel> validator
+                ) =>
+                {
+                    model.Name = model.Name.Trim();
+
+                    var validationResult = await validator.ValidateAsync(model);
+                    if (!validationResult.IsValid)
+                    {
+                        return Results.BadRequest(validationResult.Errors.ToResponse());
+                    }
+
+                    // Kiểm tra danh mục tồn tại
+                    Category categoryFoundById = await categoryService.FindCategoryByIdAsync(model.CategoryId);
+                    if (categoryFoundById != null)
+                    {
+                        Candy candyResult = await service.AddOrUpdateCandyAsync(model.Name, model.Price, model.ExpirationDate, model.CategoryId, id);
+                        candyResult.Category = null;
+                        return Results.Ok(candyResult);
+                    }
+
+                    return Results.BadRequest("Danh mục không tồn tại");
+                })
+                .WithName("UpdateCandy")
+                .Accepts<Candy>("application/json")
+                .Produces<Candy>()
+                .WithOpenApi();
+
+                // DeleteCandy
+                app.MapDelete("/candy/{id:int}", async (ICandyService service, int id) =>
+                {
+                    bool isSuccess = await service.DeleteCandyAsync(id);
+                    return Results.Ok(isSuccess ? "Xóa kẹo thành công" : "Không tìm thấy kẹo cần xóa");
+                })
+                .WithName("DeleteCandy")
+                .Produces<string>()
+                .WithOpenApi();
 
 
 

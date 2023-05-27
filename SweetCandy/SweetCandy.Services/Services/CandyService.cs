@@ -53,17 +53,56 @@ namespace SweetCandy.Services.Services
 
             queryable = queryable.OrderBy(c => c.Name);
 
-            return await queryable.ToListAsync(cancellationToken);
+            return await queryable.Include(i => i.Category).Select(i => new Candy()
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Price = i.Price,
+                ExpirationDate = i.ExpirationDate,
+                CategoryId = i.CategoryId,
+                Category = i.Category,
+            }).ToListAsync(cancellationToken);
         }
 
-        public Task<Candy> AddOrUpdateCandyAsync(string categoryName, bool showOnMenu = false, int? categoryId = null, CancellationToken cancellationToken = default)
+        public async Task<Candy> AddOrUpdateCandyAsync(
+            string candyName,
+            decimal candyPrice,
+            DateTime candyExpirationDate,
+            int categoryId,
+            int? candyId = null,
+            CancellationToken cancellationToken = default
+        )
         {
-            throw new NotImplementedException();
+            Candy candy = new Candy()
+            {
+                Id = candyId ?? 0,
+                Name = candyName,
+                Price = candyPrice,
+                ExpirationDate = candyExpirationDate,
+                CategoryId = categoryId,
+            };
+
+            if (candy.Id == 0)
+            {
+                _dbContext.Candies.Add(candy);
+            }
+            else
+            {
+                _dbContext.Candies.Update(candy);
+            }
+
+            bool isSuccess = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+            return isSuccess ? candy : null;
         }
 
-        public Task<bool> DeleteCandyAsync(int? categoryId = null, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteCandyAsync(int? candyId = null, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            if (candyId == null)
+                return false;
+
+            IQueryable<Candy> queryable = _dbContext.Set<Candy>();
+            bool isSuccess = await queryable.Where(i => i.Id == candyId).ExecuteDeleteAsync(cancellationToken) > 0;
+            return isSuccess;
         }
     }
 }
